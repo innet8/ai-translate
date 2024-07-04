@@ -1,0 +1,61 @@
+server:
+  port: 8088
+  # 配置静态资源启用 gzip 压缩
+  compression:
+    enabled: true
+    min-response-size: 128
+# 配置主数据源
+spring:
+  profiles:
+    active: prod
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  datasource:
+    url: jdbc:mysql://translate-mysql:3306/translate?useSSL=false&useUnicode=true&characterEncoding=UTF8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: translate123456
+#  data:
+    # 配置mongo数据源
+#    mongodb:
+#      host: localhost
+#      port: 27017
+#      database: magicapi
+#      username: magicapi
+#      password: 123456
+  # 配置redis数据源
+#  redis:
+#    host: localhost
+#    port: 6379
+#    database: 4
+#    timeout: 5000
+magic-api:
+  security:
+    username: admin # 登录用的用户名
+    password: mrAYckbQTx # 登录用的密码
+  web: /magic/web
+  show-sql: true #配置打印SQL
+  sql-column-case: camel
+  resource:
+    type: database # 配置存储在数据库中
+    location: data/magic-api
+    tableName: magic_api_file_v2 # 数据库中的表名
+    prefix: /magic-api # key前缀
+    readonly: false # 是否是只读模式
+  backup: #备份相关配置
+    enable: true #是否启用
+    max-history: -1 #备份保留天数，-1为永久保留
+    table-name: magic_backup_record_v2 #使用数据库存储备份时的表名
+  page:
+    page: current
+    size: size
+  cache:
+    enable: true  #开启缓存，默认是不开启的
+    ttl: 3600000 #有效期1小时，默认-1 即永不过期
+  response-code:
+    success: 200 #执行成功的code值
+    invalid: 400 #参数验证未通过的code值
+    exception: 500 #执行出现异常的code值
+  crud: # CRUD相关配置
+    logic-delete-column: is_del #逻辑删除列
+    logic-delete-value: 1 #逻辑删除值

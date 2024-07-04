@@ -1,0 +1,48 @@
+version: '3'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "translate-api-${APP_ID}"
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - "8088:8088"
+    restart: always
+    networks:
+      extnetwork:
+        ipv4_address: 10.99.99.2
+  translate-mysql:
+    container_name: "translate-mysql-${APP_ID}"
+    image: "mysql:8.0.19"
+    platform: linux/x86_64
+    ports:
+      - "13306:3306"
+    environment:
+      TZ: "Asia/Shanghai"
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/logs:/logs
+      - ./db:/docker-entrypoint-initdb.d/
+    command:
+      --lower-case-table-names=1
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+    networks:
+      extnetwork:
+        ipv4_address: 10.99.99.3
+    restart: always
+networks:
+  extnetwork:
+    name: "translate-networks-${APP_ID}"
+    ipam:
+      config:
+        - subnet: "10.99.99.0/24"
+          gateway: "10.99.99.1"
